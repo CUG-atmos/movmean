@@ -9,12 +9,13 @@ movmean
 [![License](http://img.shields.io/badge/license-GPL%20%28%3E=%203%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 <!-- badges: end -->
 
-R、Python、Julia、Fortran、Rcpp混合编程模板。
+> 2020年CUG大气科学系  
+> R、Python、Julia、Fortran、Rcpp混合编程模板
 
 Assignment (10 points)
 ----------------------
 
-选择任意一个你擅长的语言，编写好滑动平均的函数，测试通过后github推送给我。
+选择任意一个你擅长的语言，在该repository的基础上，编写滑动平均函数，测试通过后github推送给我。
 
 **主要步骤如下：**
 
