@@ -12,29 +12,35 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 ```
-
 # movmean
 
 <!-- badges: start -->
+[![License](http://img.shields.io/badge/license-GPL%20%28%3E=%203%29-brightgreen.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 <!-- badges: end -->
 
-The goal of movmean is to ...
+R、Python、Julia、Fortran、Rcpp混合编程模板。
+
+## Assignment (10 points)
+
+选择任意一个你擅长的语言，编写好滑动平均的函数，测试通过后github推送给我。
+
+**主要步骤如下：**
+
+1. 登陆github账户，fork此repository
+2. git clone 克隆的仓库链接
+3. 编写函数，编写R语言接口
+4. devtools::load_all()配合browser测试
+5. git commit提交到github，__**commit message中写明学号和姓名**__
+6. Pull request提交给我
 
 ## Installation
 
-You can install the released version of movmean from [CRAN](https://CRAN.R-project.org) with:
-
 ``` r
-install.packages("movmean")
+devtools::install_github("kongdd/movmean")
 ```
 
-## Example
+## Acknowledgements
 
-This is a basic example which shows you how to solve a common problem:
-
-```r
-library(movmean)
-## basic example code
-```
-
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+Keep in mind that this repository is released under a GPL3 license,
+which permits commercial use but requires that the source code (of
+derivatives) is always open even if hosted as a web service.

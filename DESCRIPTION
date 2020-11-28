@@ -5,7 +5,7 @@ Authors@R: c(
     person("Dongdong", "Kong", role = c("aut", "cre"), email = "kongdd.sysu@gmail.com"),
     person("CUGer", role = c("aut"), email = "users@cug.edu.cn"))
 Description: moving average.
-License: MIT + file LICENSE
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
