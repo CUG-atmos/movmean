@@ -19,13 +19,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-
-static const R_CallMethodDef CallEntries[] = {
-    {"_movmean_movmean", (DL_FUNC) &_movmean_movmean, 3},
-    {NULL, NULL, 0}
-};
-
-RcppExport void R_init_movmean(DllInfo *dll) {
-    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
-    R_useDynamicSymbols(dll, FALSE);
+// multiply_f90
+double multiply_f90(double x, double y);
+RcppExport SEXP _movmean_multiply_f90(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(multiply_f90(x, y));
+    return rcpp_result_gen;
+END_RCPP
 }

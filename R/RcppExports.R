@@ -8,16 +8,18 @@
 #' @param y A numeric vector.
 #' @param halfwin Integer, half of moving window size
 #' @param w Corresponding weights of yy, same long as yy.
-#' @param SG_style If true, head and tail values will be in the style of SG
-#' (more weights on the center point), else traditional moving mean style.
-#'
+#' 
 #' @examples
 #' x <- 1:100
 #' x[50] <- NA; x[80] <- Inf
-#' s1 <- movmean(x, 2, SG_style = TRUE)
-#' s2 <- movmean(x, 2, SG_style = FALSE)
+#' s1 <- movmean(x, 1)
+#' s2 <- movmean(x, 2)
 #' @export
 movmean <- function(y, halfwin = 1L, w = NULL) {
     .Call(`_movmean_movmean`, y, halfwin, w)
+}
+
+multiply_f90 <- function(x, y) {
+    .Call(`_movmean_multiply_f90`, x, y)
 }
 

@@ -12,9 +12,6 @@ movmean(y, halfwin = 1L, w = NULL)
 \item{halfwin}{Integer, half of moving window size}
 
 \item{w}{Corresponding weights of yy, same long as yy.}
-
-\item{SG_style}{If true, head and tail values will be in the style of SG
-(more weights on the center point), else traditional moving mean style.}
 }
 \description{
 NA and Inf values in the yy will be ignored automatically.
@@ -22,6 +19,6 @@ NA and Inf values in the yy will be ignored automatically.
 \examples{
 x <- 1:100
 x[50] <- NA; x[80] <- Inf
-s1 <- movmean(x, 2, SG_style = TRUE)
-s2 <- movmean(x, 2, SG_style = FALSE)
+s1 <- movmean(x, 1)
+s2 <- movmean(x, 2)
 }
