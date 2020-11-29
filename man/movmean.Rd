@@ -5,7 +5,7 @@
 \alias{movmean}
 \alias{movmean_rcpp}
 \alias{movmean_julia}
-\alias{movmean_python}
+\alias{movmean_np}
 \alias{movmean_r}
 \title{moving average
 
@@ -15,9 +15,9 @@ movmean_rcpp(x, halfwin = 1L, w = NULL)
 
 movmean_julia(x, halfwin = 1L)
 
-movmean_python(x, halfwin)
+movmean_np(x, halfwin)
 
-movmean_r(x, halfwin = 2L)
+movmean_r(x, halfwin = 2L, na.rm = TRUE)
 }
 \arguments{
 \item{x}{a numeric vector}
