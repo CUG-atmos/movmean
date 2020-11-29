@@ -1,22 +1,39 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Nov 29 19:15:44 2020
+
+@author: lcx
+"""
+# %%
 import numpy as np
 
-def movmean(x,halfwin):
-    m = halfwin
-    win = m*2 + 1
+
+def movmean_py(x, half_win = 1):
+    '''           
+    x = np.array([1,4,5,9,2,3,4])
+    movmean_python(x,2)   #函数检验         
+    '''
+    m = half_win
+    win = 2*m+1
     n = len(x)
     y = np.zeros(n)
-    for i in range(n):
-        if m<= i < (n-m):
-          y[i] = sum(x[(i-m):(i+m+1)])/win
-        if (i < m):
-          y[i] = sum(x[0:(m+i+1)])/len(x[0:(m+i+1)])
-        if i >= n-m:
-          y[i] = sum(x[(i-m):n])/len(x[(i-m):n])
+    for i in range(0,n):
+        if i < m:
+            ind = np.arange(i+m+1)
+            y[i] = sum(x[ind])/len(x[ind])
+        elif i >= m and i <=(n-m-1):
+            ind = np.arange((i-m),(i+m+1))
+            y[i] = sum(x[ind])/win
+        else:
+            ind = np.arange((i-m),n)
+            y[i] = sum(x[ind])/len(x[ind])
     return y
-'''
-eg:
-print(movmean([2,4,1,5,7,8],2))
-[2.33333333 3. 3.8  5. 5.25 6.66666667]
-print(movmean([1,3,5,6,7,8,9,5,4,2,2],1))
-[2. 3. 4.66666667 6. 7. 8. 7.33333333 6. 3.66666667 2.66666667 2. ]
-'''
+
+
+# if __name__ == "__main__":
+#     x = np.array([1, 2, 3, 4])
+#     r = movmean_py(x, 1)
+#     print(r)
+
+
+# %%

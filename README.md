@@ -26,6 +26,13 @@ Assignment (10 points)
 5.  git commit提交到github，****commit message中写明学号和姓名****
 6.  Pull request提交给我
 
+**如何修改remote-url:**
+```bash
+# change remote url
+git remote set-url origin https://github.com/your_username/movmean
+git push
+```
+
 Installation
 ------------
 
