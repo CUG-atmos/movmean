@@ -1,0 +1,82 @@
+---
+
+title: "1. git入门"
+author: "Dongdong Kong"
+date: "2020/11/28"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Git入门教程
+
+## Git设置
+
+```bash
+# 仅设置一次即可
+git config --global user.name "Dongdong Kong"
+git config --global user.email "kongdd@users.noreply.github.com"
+git config --global credential.helper store # 记录密码，防止每次都要输入
+```
+
+user.name和user.email需要改成自己的名字。
+
+邮箱最好选择github账户中的邮箱，这样github可以认出是你本人在提交代码。
+
+在此处查看你的github user.name与user.emailhttps://github.com/settings/emails
+
+![](man\images\github-user.email.png)
+
+```bash
+# 不常用命令
+git config --global --list # 显示global config，核对刚刚的git设置
+```
+
+## Git基本命令
+
+### 如何下载代码
+
+```bash
+# 下载github代码，若想用git管理代码，请勿使用Download ZIP下载
+# git clone your_repo_url 
+# 打开Terminal(cmd, powershell, or windows terminal)输入：
+git clone https://github.com/CUG-atmos/movmean # 下载本节课的代码素材
+```
+*注意：`your_repo_url`的格式为`https://github.com/username/repo_name`*
+
+### 如何新建github repo，并上传自己的代码
+
+```bash
+mkdir hello # 新建文件夹
+git init    # git 初始化，告诉系统这是一个git仓库
+# 1. 写点东西，bala bala ~
+# 2. github新建repository，记下repo_url，如`https://github.com/kongdd/hello`
+git remote add origin https://github.com/CUG-atmos/movmean # 添加remote，这里改成你自己的repo_url
+# 3. 推送到remote
+git push    # 推送代码
+git push -f # 强制推送代码
+# 4. 下载新版代码
+git pull    # 从remote下载代码
+```
+
+```bash
+git fetch all # 下载所有branch分支，不同的人可能在不同的branch写代码
+```
+
+#### 实战：在github创建hello仓库，并修改README
+
+```bash
+# 告诉系统我的remote repo在哪
+git remote add origin https://github.com/kongdd/hello
+```
+
+![](man\images\git-new-repository.png)
+
+# Sublime merge
+
+工具用的好，git的命令除了git push、git push，其他完全不需要记。
+
+
+
