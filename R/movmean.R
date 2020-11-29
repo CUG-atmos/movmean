@@ -1,5 +1,6 @@
 #' @export
 movmean_R <- function(x, halfwin) {
+  n <- length(x)
   m <- halfwin    #halfwin为半窗长度
   win <- 2*m+1
   y <- vector()    #为返回值做准备
