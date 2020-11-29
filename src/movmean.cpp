@@ -2,7 +2,8 @@
 // #include <Rcpp.h>
 using namespace Rcpp;
 
-//' movmean
+//' @name movmean
+//' @title moving average
 //'
 //' NA and Inf values in the xx will be ignored automatically.
 //'
@@ -15,6 +16,7 @@ using namespace Rcpp;
 //' x[50] <- NA; x[80] <- Inf
 //' s1 <- movmean_rcpp(x, 1)
 //' s2 <- movmean_rcpp(x, 2)
+//' @rdname movmean
 //' @export
 // [[Rcpp::export]]
 NumericVector movmean_rcpp(

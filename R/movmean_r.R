@@ -1,5 +1,9 @@
+#' @examples
+#' x <- c(1, 2, 3, 4, 5)
+#' r_r <- movmean_R(x, 2)
+#' @rdname movmean
 #' @export
-movmean_R <- function(x, halfwin) {
+movmean_r <- function(x, halfwin = 2L) {
   m <- halfwin
   n <- length(x)
   win <- 2*m+1
@@ -17,6 +21,3 @@ movmean_R <- function(x, halfwin) {
   }
   y
 }
-
-x <- c(1, 2, 3, 4, 5)
-x.movmean <- movmean_R(x, 2)
