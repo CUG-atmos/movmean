@@ -1,17 +1,21 @@
 #' @export
-movmean_R <- function(x, halfwin) {
-  win<-2*halfwin+1
-  movmean<-vector(mode = 'numeric',length = length(x))
-  for (i in 1:length(x)){
-    if(i<halfwin+1){
-      ind<-1:(i+halfwin)
-      movmean[i]<-sum(x[ind])/length(ind)
-    }else if(i>=halfwin+1&i<=(length(x)-halfwin)){
-      movmean[i]<-sum(x[(i-halfwin):(i+halfwin)])/win
-    }else if(i>length(x)-halfwin){
-      ind<-(i-halfwin):win
-      movmean[i]<-sum(x[ind])/length(ind)
+movmean_R <- function(x,n) { #n=halfwin
+  len <- length(x)
+  each.mean <- numeric()     #restore mean value of each movement
+  for( i in 1:length(x)){
+    if(n+1 <= i <= len-n){
+      ind <- (i-n):(i+n)
+      each.mean[length(each.mean)+1] <- mean(x[ind])
+    }
+    if( i < (n+1) ){
+      ind <- 1:(i+n)
+      each.mean[length(each.mean)+1] <- mean(x[ind])
+    }
+    if( i > (len-n)){
+      ind <- (i-n):len
+      each.mean[length(each.mean)+1] <- mean(x[ind])
     }
   }
+  movmean <- mean(each.mean)
   return(movmean)
 }
