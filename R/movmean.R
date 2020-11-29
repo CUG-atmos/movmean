@@ -22,6 +22,7 @@ r
 }
 
 #movmean_R函数检验
+
 x <- runif(100,50,100)
 movmean <- movmean_R(x,5)
 x1<-1:100
