@@ -1,5 +1,5 @@
 #' @export 
-wsum_vec2 <- function(x, ws = NULL, mask = NULL, normalize = FALSE) {
+movmean_f90 <- function(x, ws = NULL, mask = NULL, normalize = FALSE) {
     if (is.null(ws)) ws = rep(1.0, length(x))
     if (is.null(mask)) mask = is.na(x)
     

@@ -17,3 +17,5 @@ Imports:
     Rcpp,
     JuliaCall,
     reticulate
+Suggests: 
+    testthat

@@ -11,11 +11,11 @@
 
 
 // C functions
-extern SEXP _movmean_movmean(SEXP, SEXP, SEXP);
+extern SEXP _movmean_movmean_rcpp(SEXP, SEXP, SEXP);
 extern SEXP _movmean_multiply_f90(SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_movmean_movmean", (DL_FUNC)&_movmean_movmean, 3},
+    {"_movmean_movmean_rcpp", (DL_FUNC)&_movmean_movmean_rcpp, 3},
     {"_movmean_multiply_f90", (DL_FUNC)&_movmean_multiply_f90, 2},
     {NULL, NULL, 0}};
 

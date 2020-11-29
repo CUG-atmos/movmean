@@ -6,16 +6,16 @@
 
 using namespace Rcpp;
 
-// movmean
-NumericVector movmean(const arma::colvec y, int halfwin, Nullable<NumericVector> w);
-RcppExport SEXP _movmean_movmean(SEXP ySEXP, SEXP halfwinSEXP, SEXP wSEXP) {
+// movmean_rcpp
+NumericVector movmean_rcpp(const arma::colvec x, int halfwin, Nullable<NumericVector> w);
+RcppExport SEXP _movmean_movmean_rcpp(SEXP xSEXP, SEXP halfwinSEXP, SEXP wSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::colvec >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::colvec >::type x(xSEXP);
     Rcpp::traits::input_parameter< int >::type halfwin(halfwinSEXP);
     Rcpp::traits::input_parameter< Nullable<NumericVector> >::type w(wSEXP);
-    rcpp_result_gen = Rcpp::wrap(movmean(y, halfwin, w));
+    rcpp_result_gen = Rcpp::wrap(movmean_rcpp(x, halfwin, w));
     return rcpp_result_gen;
 END_RCPP
 }

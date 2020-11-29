@@ -40,6 +40,17 @@ knitr::opts_chunk$set(
 devtools::install_github("kongdd/movmean")
 ```
 
+## Benchmarks
+
+
+```{r}
+x = c(NA, 1, 2, 3, 4, 5, Inf)
+# answer = c(1, 1.5, 2, 3, 4, 4.5, 5)
+r_cpp <- movmean_rcpp(x, halfwin = 1)
+# 欲用此版本需安装Julia，Julia版本暂时不能考虑NA, Inf
+# r_jl <- movmean_julia(x, halfwin = 1)
+```
+
 ## Acknowledgements
 
 Keep in mind that this repository is released under a GPL3 license,
