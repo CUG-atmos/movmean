@@ -19,3 +19,9 @@ NULL
 #' @param x a numeric vector
 #' @param halfwin integer, half size of the moving windows
 NULL
+
+
+.onLoad <- function(libname, pkgname) {
+    python_init()
+    # julia_init()
+}
