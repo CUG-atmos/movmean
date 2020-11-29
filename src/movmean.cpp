@@ -2,42 +2,44 @@
 // #include <Rcpp.h>
 using namespace Rcpp;
 
-//' movmean
+//' @name movmean
+//' @title moving average
 //'
-//' NA and Inf values in the yy will be ignored automatically.
+//' NA and Inf values in the xx will be ignored automatically.
 //'
-//' @param y A numeric vector.
+//' @param x A numeric vector.
 //' @param halfwin Integer, half of moving window size
-//' @param w Corresponding weights of yy, same long as yy.
-//' 
+//' @param w Corresponding weights of xx, same long as yy.
+//'
 //' @examples
 //' x <- 1:100
 //' x[50] <- NA; x[80] <- Inf
-//' s1 <- movmean(x, 1)
-//' s2 <- movmean(x, 2)
+//' s1 <- movmean_rcpp(x, 1)
+//' s2 <- movmean_rcpp(x, 2)
+//' @rdname movmean
 //' @export
 // [[Rcpp::export]]
-NumericVector movmean(
-    const arma::colvec y,
+NumericVector movmean_rcpp(
+    const arma::colvec x,
     int halfwin = 1,
     Nullable<NumericVector> w = R_NilValue)
 {
-  int n = y.size();
-  arma::colvec yy(y);
+  int n = x.size();
+  arma::colvec xx(x);
 
-  int frame = halfwin*2 + 1;
-  int d = 1;
+  // int frame = halfwin*2 + 1;
+  // int d = 1;
   // Create vector filled with NA(R version)
-  arma::colvec ma = yy * NA_REAL; //ma: moving average
+  arma::colvec ma = xx * NA_REAL; //ma: moving average
   arma::colvec ww = arma::ones<arma::colvec>(n); // weights
   if (w.isNotNull()) {
     ww = as<arma::colvec>(w);
   }
   // check Inf and NA
   for (int i = 0; i < n; i++ ) {
-    if (!Rcpp::traits::is_finite<REALSXP>(yy[i])){
+    if (!Rcpp::traits::is_finite<REALSXP>(xx[i])){
       ww[i] = 0;
-      yy[i] = 0.0; // missing value as zero
+      xx[i] = 0.0; // missing value as zero
     }
   }
 
@@ -61,11 +63,11 @@ NumericVector movmean(
     sum_w = 0.0; // sum of weights in window
 
     for (int j = i_begin; j <= i_end; j++) {
-      if (Rcpp::traits::is_finite<REALSXP>(yy[j])) {
+      if (Rcpp::traits::is_finite<REALSXP>(xx[j])) {
         n_i++;
-        sum += yy[j];
+        sum += xx[j];
         sum_w += ww[j];
-        // sum += ww[k] * yy[j];
+        // sum += ww[k] * xx[j];
         // sum_wtNA += ww[k];
       }
     }

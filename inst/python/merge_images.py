@@ -16,7 +16,7 @@ def imgs2pdf(files, outfile):
              save_all=True)
 
 
-def imgs2gif(files, outfile, duration):
+def imgs2gif(files, outfile, duration = 20):
     img, *imgs = [Image.open(f) for f in sorted(files)]
     img.save(fp=outfile, format='GIF', append_images=imgs,
              save_all=True, duration=duration, loop=0)

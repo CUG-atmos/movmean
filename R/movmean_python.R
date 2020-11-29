@@ -1,13 +1,19 @@
-#' @export 
+#' @export
 movmean_python <- function(x, halfwin) {
 
 }
 
 
 #' @importFrom reticulate source_python
-init_python < - function(){
-    env = parent.frame()
-    # env = as.environment("package:ARdetection.Pan")
-    file = system.file("python/ar_iden.py", package="ARdetection.Pan")
-    source_python(file, env)
+python_init <- function(){
+    # env = parent.frame()
+    env = environment(.onLoad)
+    file = system.file("python/movmean.py", package="movmean")
+    # browser()
+    reticulate::source_python(file, env)
+}
+
+.onLoad <- function(libname, pkgname) {
+    python_init()
+    julia_init()
 }

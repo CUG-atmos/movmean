@@ -8,3 +8,14 @@
 #' @importFrom Rcpp sourceCpp
 ## usethis namespace: end
 NULL
+
+
+
+#' @title moving average
+#' @name movmean
+#' 
+#' @description moving average
+#' 
+#' @param x a numeric vector
+#' @param halfwin integer, half size of the moving windows
+NULL
