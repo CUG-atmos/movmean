@@ -13,6 +13,33 @@ module mo_weight
 
 contains
 
+! movmean_r <- function(x, halfwin = 2L, na.rm = TRUE) {
+!   m <- halfwin
+!   n <- length(x)
+!   y <- rep(NA_real_, n)
+!   for (i in 1:n) {
+!     i_begin <- pmin(i - m, 1)
+!     i_end   <- pmax(i + m, n)
+!     y[i] <- mean(x[i_begin:i_end], na.rm = na.rm)
+!   }
+!   y
+! }
+
+subroutine movmean_f90(x, halfwin, n, x_mov) bind(C, name="movmean_f90_")
+    INTEGER, INTENT(IN) :: halfwin  
+    INTEGER, INTENT(IN) :: n   
+    REAL(8)   , dimension(n), intent(in) :: x
+    REAL(8)   , dimension(n), intent(OUT) :: x_mov
+
+    integer :: i_begin, i_end
+
+    do i = 1, n
+        i_begin = max(i - halfwin , 1)
+        i_end = min(i + halfwin, n)
+        x_mov(i) = sum(x(i_begin:i_end))/(i_end - i_begin + 1)
+    end do
+end
+
 ! normalize: default false; if true, sum(ws) = 1
 real function wsum_vec(mat, ws, mask, normalize, n) bind(C, name="wsum_vec_")
     INTEGER, INTENT(IN) :: n   

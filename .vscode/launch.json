@@ -11,7 +11,7 @@
             "program": "/usr/bin/Rscript", //"/usr/bin/Rscript", 
             // "program": "C:/Program Files/R/R-3.6.1/bin/x64/Rscript.exe",
             "args": [
-                "${workspaceFolder}/test-rcpp.R"
+                "${workspaceFolder}/debug-Rcpp.R"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

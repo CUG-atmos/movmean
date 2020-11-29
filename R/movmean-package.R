@@ -25,3 +25,15 @@ NULL
     python_init()
     # julia_init()
 }
+
+#' @importFrom reticulate source_python
+python_init <- function() {
+    # env = parent.frame()
+    env <- environment(.onLoad)
+    file <- system.file("python/movmean.py", package = "movmean")
+    # file = "python/movmean.py"
+    # browser()
+    # print(env)
+    reticulate::source_python(file, env)
+}
+

@@ -6,14 +6,3 @@
 movmean_np <- function(x, halfwin) {
     movmean_py_np(as.matrix(x), as.integer(halfwin))
 }
-
-
-#' @importFrom reticulate source_python
-python_init <- function(){
-    # env = parent.frame()
-    env = environment(.onLoad)
-    file = system.file("python/movmean.py", package="movmean")
-    # file = "python/movmean.py"
-    #browser()
-    reticulate::source_python(file, env)
-}

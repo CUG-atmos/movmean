@@ -51,18 +51,21 @@ devtools::install_github("kongdd/movmean")
 
 
 ```{r}
+library(movmean)
 x = c(NA, 1, 2, 3, 4, 5, Inf)
-x = c(NA, rnorm(1000), Inf)
 # answer = c(1, 1.5, 2, 3, 4, 4.5, 5)
+x = c(rnorm(1000))
+r_jl  <- movmean_julia(x, halfwin = 5)
 
 # 欲用此版本需安装Julia，Julia版本暂时不能考虑NA, Inf
 # r_jl <- movmean_julia(x, halfwin = 1)
 microbenchmark::microbenchmark(
   r_jl  <- movmean_julia(x, halfwin = 5),
   r_cpp <- movmean_rcpp(x, halfwin = 5),
-  r_r   <- movmean_r(x, halfwin = 5), # the version of wyxz
-  r_py <- movmean_py(x, halfwin = 5L), 
-  r_np <- movmean_np(x, halfwin = 5L)
+  r_f90 <- movmean_f90(x, halfwin = 5L),
+  r_r   <- movmean_r(x, halfwin = 5, na.rm = FALSE), # the version of wyxz
+  r_py  <- movmean:::movmean_py(x, halfwin = 5L), 
+  r_np  <- movmean_np(x, halfwin = 5L)
 )
 ```
 

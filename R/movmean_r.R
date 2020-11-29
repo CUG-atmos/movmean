@@ -8,9 +8,12 @@ movmean_r <- function(x, halfwin = 2L, na.rm = TRUE) {
   n <- length(x)
   y <- rep(NA_real_, n)
   for (i in 1:n) {
-    i_begin <- pmin(i - m, 1)
-    i_end   <- pmax(i + m, n)
-    y[i] <- mean(x[i_begin:i_end], na.rm = na.rm)
+    i_begin <- i - m
+    i_end   <- i + m
+    if (i_begin < 1) i_begin = 1
+    if (i_end > 1) i_end = n
+    y[i] = mean(x[i_begin:i_end])
+    # y[i] <- mean(x[i_begin:i_end], na.rm = na.rm)
   }
   y
 }
