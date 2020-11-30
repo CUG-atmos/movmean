@@ -1,5 +1,7 @@
 #2202010157fsy 2020.11.30
-movemean <- function(x, i, m, na.rm = TRUE){
+
+movemean <- function(x, m, na.rm = TRUE){
+  y <- vector()
   n <- length(x)
   for(i in m:n){
     i_begin <- i-m+1
@@ -12,3 +14,4 @@ movemean <- function(x, i, m, na.rm = TRUE){
 
 # x <- 1:20
 # movemean(x = x, m = 3)
+
