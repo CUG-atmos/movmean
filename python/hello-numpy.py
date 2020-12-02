@@ -2,10 +2,12 @@ import numpy as np
 def movemean(x,halfwin):
     n=len(x)
     p=np.zeros(n)
-    if halfwin>n/2:
+    a=[float(np.inf),float(-np.inf)]
+    if halfwin>n/2 or halfwin in a:
         return print("error:halfwin is too long.")
-
-    if halfwin==1:
+    elif halfwin==np.NAN:
+         print('error:halfwin is NAN')
+    elif halfwin==1:
         p[0]=(p[0]+p[1])/2
         for i in range(1,n-1):
             p[i]=(p[i]+p[i-1]+p[i+1])/3
