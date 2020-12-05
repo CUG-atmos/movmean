@@ -1,0 +1,271 @@
+---
+title: "R语言对接Fortran代码"
+author: "Dongdong Kong"
+date: "2020/12/05"
+output: 
+  html_document:
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 背景
+
+为何要对接Fortran代码？（1）Fortran是当之无愧的性能之王，在本文的测试中可以看到
+Fortran代码的效率是Rcpp的2倍、Julia的4倍、R语言的90倍、python的30倍。在for循环密集的代码中，fortran可以轻松
+达到R语言的200倍；（2）很多古老的、但专业上通用的模型采用Fortran语言编写，翻译成
+其他语言，人力所不能及。
+
+为何对接到R语言？R语言代码简单，调试方便；准备模型的输入、输出数据便利；此外，R语言擅长
+统计分析和作图。这些fortran难以企及。因此如果能对接Fortran代码到R语言，可以集二者
+之所长，更高效率的使用模型和分析数据。
+
+# 如何对接
+
+## 新建R project，选择R package using devtools
+
+一般选择R package对接Fortran代码，对接完成之后，不需要修改，直接适用于windows、Linux
+和mac操作系统。
+
+
+## 编写Fortran函数
+
+在次之前，需要安装Rtools（建议安装4.0版本，不用修改默认安装路径，直接放在C盘，仅占
+用1G左右空间，https://cran.r-project.org/bin/windows/Rtools/）。
+
+高级编程语言（如c、c++、Fortran）的代码应放在src文件夹。
+
+> 注意：（1）Fortran代码中real需要声明为REAL(8)，因为R语言没有float类型的变量，否则会
+导致不可预知的错误。（2）需要加上`bind(C, name="movmean_f90_")`，其中`name`一般取原函数名+"_"，否则R语言无法调用。
+这是规范，不需要理解原因。
+
+```Fortran
+! mo_movmean.f90
+subroutine movmean_f90(x, halfwin, n, x_mov) bind(C, name="movmean_f90_")
+    INTEGER, INTENT(IN) :: halfwin  
+    INTEGER, INTENT(IN) :: n   
+    REAL(8)   , dimension(n), intent(in) :: x
+    REAL(8)   , dimension(n), intent(OUT) :: x_mov
+
+    integer :: i_begin, i_end
+
+    do i = 1, n
+        i_begin = max(i - halfwin , 1)
+        i_end = min(i + halfwin, n)
+        x_mov(i) = sum(x(i_begin:i_end))/(i_end - i_begin + 1)
+    end do
+end
+```
+
+## 注册到dll文件
+
+这一步相对较为复杂，每次只需要把这个模板拷贝过来即可。
+
+在src文件夹，新建`register_routines.c`文件，写入以下内容：
+
+```c
+#include <R.h>
+#include <Rinternals.h>
+#include <R_ext/Rdynload.h>
+// #include <stdlib.h> // for NULL
+
+#define CALLDEF(name, n) {#name, (DL_FUNC) &name, n}
+
+// // C functions
+// extern SEXP _movmean_movmean_rcpp(SEXP, SEXP, SEXP);
+// extern SEXP _movmean_multiply_f90(SEXP, SEXP);
+
+// static const R_CallMethodDef CallEntries[] = {
+//     {"_movmean_movmean_rcpp", (DL_FUNC)&_movmean_movmean_rcpp, 3},
+//     {"_movmean_multiply_f90", (DL_FUNC)&_movmean_multiply_f90, 2},
+//     {NULL, NULL, 0}};
+
+// Fortran functions
+extern void F77_NAME(movmean_f90)(void *, void *, void *, void *);
+
+static const R_FortranMethodDef FortranEntries[] = {
+    {"movmean_f", (DL_FUNC)&F77_NAME(movmean_f90), 4},
+    {NULL, NULL, 0}};
+
+void R_init_movmean(DllInfo *dll)
+{
+    R_registerRoutines(dll, NULL, NULL, FortranEntries, NULL)
+    R_useDynamicSymbols(dll, FALSE);
+}
+```
+
+1. 声明函数
+
+`F77_NAME`之后紧跟函数名，之后是参数，有几个参数，写即可`void *`即可
+
+```c
+extern void F77_NAME(movmean_f90)(void *, void *, void *, void *);
+```
+
+2. 声明`FortranEntries`
+
+大括号中第一个参数`movmean_f`为注册到dll中的名称，第二个参数`movmean_f90`为Fortran
+代码中的函数名，第三个参数为`movmean_f90`的参数个数。
+
+```c
+static const R_FortranMethodDef FortranEntries[] = {
+    {"movmean_f", (DL_FUNC)&F77_NAME(movmean_f90), 4},
+    {NULL, NULL, 0}};
+```
+
+3. 注册到dll
+
+其中第三个参数为CEntries，第四个参数为FortranEntries。这里我们仅使用FortranEntries，
+其余参数设置为NULL。如用到c/c++代码，则需要填写第三个参数CEntries。详情请参考：
+https://github.com/CUG-atmos/movmean/blob/main/src/register_routines.c
+
+> 注意`R_init_movmean`的命名规则为`R_init_` + `packageName`。
+
+```c
+void R_init_movmean(DllInfo *dll)
+{
+    R_registerRoutines(dll, NULL, NULL, FortranEntries, NULL)
+    R_useDynamicSymbols(dll, FALSE);
+}
+```
+
+## 对接到R语言
+
+采用`.Fortran`调用注册好的Fortran函数。
+```r
+#' @export 
+movmean_f90 <- function(x, halfwin = 1L) {
+    # if (is.null(ws)) ws = rep(1.0, length(x))
+    # if (is.null(mask)) mask = is.na(x)
+    y = rep(-9999.0, length(x))
+    ans <- .Fortran("movmean_f", x, halfwin, length(x), y)
+    # print(str(ans))
+    last(ans)[[1]] # the last is the returned result
+}
+```
+
+# 如何调试
+
+除非天才，否则难以保证代码一次就对，这时需要用到调试debug。如果没有debug，只能凭空
+猜测程序错在哪，一般人类难以做到。
+
+对接好的Fortran代码，经常会报内存类的错误，这是Rstudio经常卡死，无任何错误信息。
+如果不知道调试，错误修改绝对不知道如何下手。
+
+VSCode是代码第一编辑，也是调试各种语言的第一利器。调试R语言中的Fortran代码自然也不
+在话下：
+
+调试需要在WSL、Linux中进行，如何安装WSL请参考我的另一篇公众号。
+
+1. 用VSCode打开该package的文件夹，reopen in WSL。
+2. 设置launch.json（该文件在./.vscode/launch.json下）。
+
+内容如下：
+```javascript
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/usr/bin/Rscript", //"/usr/bin/Rscript", 
+            // "program": "C:/Program Files/R/R-3.6.1/bin/x64/Rscript.exe",
+            "args": [
+                "${workspaceFolder}/debug-Rcpp.R"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}
+```
+
+这里指定的程序运行入口是debug-Rcpp.R文件。
+
+3. debug-Rcpp.R中写入调试内容
+
+```r
+#! /usr/bin/Rscript
+devtools::load_all()
+
+x = (1:100)*1.0
+y = movmean_f90(x)
+print(y)
+```
+
+4. 设置断点
+
+   ![](E:\Research\cluster\movmean\man\images\breakpoint.png)
+
+5. VSCode中按F5进入调试模式
+
+   ![](E:\Research\cluster\movmean\man\images\DEBUG-fortran.png)
+
+可视化界面下代码调试将变得易如反掌。同样的方法可以用来调试VIC、CESM。
+
+完结，撒花。
+
+# 后续
+
+R语言对接Rcpp较为简单，devtools已经做了很多工作。对接c语言的工作与Fortran类似，
+读者可以触类旁通。已经掌握一种语言对接的方法，可以更一步进阶，尝试多种语言的混编（如Rcpp和Fortran）。
+研究中，经常会碰到这种需求。
+
+关于对接c和Fortran，网上几乎没有教程。有的只是论坛上的零星片段，建议多去肢解别人
+编好的对接c、Fortran的R包。
+
+movmean，不仅对接了Fortran，还对接了Rcpp、Julia、python。不同语言的运算效率如下：
+
+``` r
+library(movmean)
+x = c(NA, 1, 2, 3, 4, 5, Inf)
+# answer = c(1, 1.5, 2, 3, 4, 4.5, 5)
+x = c(rnorm(1000))
+r_jl  <- movmean_julia(x, halfwin = 5)
+#> Julia version 1.5.3 at location C:\PROGRA~1\Julia\JULIA1~1.3\bin will be used.
+#> Loading setup script for JuliaCall...
+#> Finish loading setup script for JuliaCall.
+
+# 欲用此版本需安装Julia
+microbenchmark::microbenchmark(
+  r_jl  <- movmean_julia(x, halfwin = 5),
+  r_cpp <- movmean_rcpp(x, halfwin = 5),
+  r_f90 <- movmean_f90(x, halfwin = 5L),
+  r_r   <- movmean_r(x, halfwin = 5, na.rm = FALSE), # the version of wyxz
+  r_py  <- movmean:::movmean_py(x, halfwin = 5L), 
+  r_np  <- movmean_np(x, halfwin = 5L)
+)
+#> Unit: microseconds
+#>                                             expr     min       lq      mean
+#>            r_jl <- movmean_julia(x, halfwin = 5)    81.8   129.05   175.402
+#>            r_cpp <- movmean_rcpp(x, halfwin = 5)    80.1    94.10   100.265
+#>            r_f90 <- movmean_f90(x, halfwin = 5L)    21.5    36.70    51.808
+#>  r_r <- movmean_r(x, halfwin = 5, na.rm = FALSE)  4553.6  4646.65  7528.842
+#>    r_py <- movmean:::movmean_py(x, halfwin = 5L)  1350.7  1445.00  1542.813
+#>              r_np <- movmean_np(x, halfwin = 5L) 10074.3 10578.60 11028.487
+#>    median       uq      max neval
+#>    191.00   210.70    309.9   100
+#>    100.35   105.45    238.5   100
+#>     50.95    55.70    641.4   100
+#>   4715.00  4804.05 210040.2   100
+#>   1530.35  1611.70   2164.7   100
+#>  11047.55 11531.85  11913.7   100
+```
+
+如有疑问，欢迎留言。

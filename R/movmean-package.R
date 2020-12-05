@@ -22,7 +22,7 @@ NULL
 
 
 .onLoad <- function(libname, pkgname) {
-    python_init()
+    # python_init()
     # julia_init()
 }
 
